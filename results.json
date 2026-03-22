@@ -1,0 +1,65 @@
+{
+  "algorithm": "VanDerMerweKourie2002",
+  "data_structure": "set",
+  "concepts_count": 5,
+  "execution_time_ms": 0.06008148193359375,
+  "context_info": {
+    "object_count": 3,
+    "attribute_count": 4,
+    "density": 0.5833333333333334
+  },
+  "concepts": [
+    {
+      "extent": [
+        "кошка",
+        "рыба",
+        "собака"
+      ],
+      "intent": [
+        "хищник"
+      ]
+    },
+    {
+      "extent": [],
+      "intent": [
+        "домашнее",
+        "млекопитающее",
+        "плавает",
+        "хищник"
+      ]
+    },
+    {
+      "extent": [
+        "кошка",
+        "собака"
+      ],
+      "intent": [
+        "млекопитающее",
+        "хищник"
+      ]
+    },
+    {
+      "extent": [
+        "рыба"
+      ],
+      "intent": [
+        "плавает",
+        "хищник"
+      ]
+    },
+    {
+      "extent": [
+        "кошка"
+      ],
+      "intent": [
+        "домашнее",
+        "млекопитающее",
+        "хищник"
+      ]
+    }
+  ],
+  "metadata": {
+    "timestamp": "2026-02-28 11:20:41",
+    "version": "1.0.0"
+  }
+}

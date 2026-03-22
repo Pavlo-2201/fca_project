@@ -1,0 +1,90 @@
+[
+  {
+    "name": "tiny_sparse",
+    "objects": 5,
+    "attributes": 5,
+    "density": 0.2,
+    "set_time": 5.412101745605469e-05,
+    "bitset_time": 0.0004603862762451172,
+    "set_count": 6,
+    "bitset_count": 6,
+    "speedup": 0.11755567063697565
+  },
+  {
+    "name": "tiny_dense",
+    "objects": 5,
+    "attributes": 5,
+    "density": 0.96,
+    "set_time": 2.3603439331054688e-05,
+    "bitset_time": 3.0517578125e-05,
+    "set_count": 3,
+    "bitset_count": 3,
+    "speedup": 0.7734375
+  },
+  {
+    "name": "small_sparse",
+    "objects": 10,
+    "attributes": 10,
+    "density": 0.13,
+    "set_time": 0.00013589859008789062,
+    "bitset_time": 5.555152893066406e-05,
+    "set_count": 11,
+    "bitset_count": 11,
+    "speedup": 2.4463519313304722
+  },
+  {
+    "name": "small_dense",
+    "objects": 10,
+    "attributes": 10,
+    "density": 0.91,
+    "set_time": 0.0014891624450683594,
+    "bitset_time": 0.00020837783813476562,
+    "set_count": 41,
+    "bitset_count": 41,
+    "speedup": 7.146453089244852
+  },
+  {
+    "name": "medium_sparse",
+    "objects": 20,
+    "attributes": 20,
+    "density": 0.0975,
+    "set_time": 0.0008368492126464844,
+    "bitset_time": 0.00022172927856445312,
+    "set_count": 26,
+    "bitset_count": 26,
+    "speedup": 3.774193548387097
+  },
+  {
+    "name": "medium_dense",
+    "objects": 20,
+    "attributes": 20,
+    "density": 0.8875,
+    "set_time": 1.9315745830535889,
+    "bitset_time": 0.15213727951049805,
+    "set_count": 8249,
+    "bitset_count": 8249,
+    "speedup": 12.69626083277178
+  },
+  {
+    "name": "large_sparse",
+    "objects": 25,
+    "attributes": 25,
+    "density": 0.0976,
+    "set_time": 0.0018296241760253906,
+    "bitset_time": 0.00039076805114746094,
+    "set_count": 43,
+    "bitset_count": 43,
+    "speedup": 4.682123245881635
+  },
+  {
+    "name": "large_dense",
+    "objects": 25,
+    "attributes": 25,
+    "density": 0.9056,
+    "set_time": 21.98269557952881,
+    "bitset_time": 1.4161779880523682,
+    "set_count": 55753,
+    "bitset_count": 55753,
+    "speedup": 15.522551377712785
+  }
+]

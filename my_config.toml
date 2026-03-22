@@ -1,0 +1,8 @@
+[cosmic-ray]
+module-path = "fca"
+timeout = 30.0
+excluded-modules = []
+test-command = "pytest {path}"
+
+[cosmic-ray.distributor]
+name = "local"
