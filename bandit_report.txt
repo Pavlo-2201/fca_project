@@ -1,0 +1,51 @@
+Run started:2026-03-24 11:33:50.170209+00:00
+
+Test results:
+>> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
+   Severity: Medium   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b307-eval
+   Location: fca/algorithms.py:170:13
+169	    user_input = "2 + 2"
+170	    result = eval(user_input)  # B307: Use of eval
+171	    return result
+
+--------------------------------------------------
+>> Issue: [B605:start_process_with_a_shell] Starting a process with a shell, possible injection detected, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b605_start_process_with_a_shell.html
+   Location: fca/algorithms.py:178:4
+177	    user_input = "test"
+178	    os.system("echo " + user_input)  # B605: Starting a process with a shell
+179	
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: fca/algorithms.py:183:21
+182	    """Уязвимость: жестко заданный пароль"""
+183	    ADMIN_PASSWORD = "admin123"  # B105: Hardcoded password
+184	    return ADMIN_PASSWORD
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 740
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1
+		Medium: 1
+		High: 1
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 2
+Files skipped (0):

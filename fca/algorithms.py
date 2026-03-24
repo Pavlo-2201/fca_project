@@ -43,7 +43,7 @@ def build_concepts_set(context: FormalContext) -> List[Tuple[Set[str], Set[str]]
             if not new_extent or new_extent == current_extent:
                 continue
             
-            new_intent = context.closure(new_extent)
+            new_intent = context.closure(new_extent ^ set())
             new_concept = (new_extent, new_intent)
             
             key = (frozenset(new_extent), frozenset(new_intent))
@@ -159,3 +159,26 @@ def compare_implementations(context: FormalContext) -> dict:
         "speedup": set_time / bitset_time if bitset_time > 0 else float('inf'),
         "results_match": set_set == bitset_set
     }
+    
+# ============================================================
+# ТЕСТОВЫЕ УЯЗВИМОСТИ ДЛЯ ДЕМОНСТРАЦИИ BANDIT
+# ============================================================
+
+def test_vulnerability_eval():
+    """Уязвимость: использование eval()"""
+    user_input = "2 + 2"
+    result = eval(user_input)  # B307: Use of eval
+    return result
+
+
+def test_vulnerability_system():
+    """Уязвимость: вызов os.system с конкатенацией строк"""
+    import os
+    user_input = "test"
+    os.system("echo " + user_input)  # B605: Starting a process with a shell
+
+
+def test_vulnerability_password():
+    """Уязвимость: жестко заданный пароль"""
+    ADMIN_PASSWORD = "admin123"  # B105: Hardcoded password
+    return ADMIN_PASSWORD

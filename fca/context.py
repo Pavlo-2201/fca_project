@@ -146,8 +146,8 @@ class FormalContext:
         Returns:
             множество признаков, общих для всех объектов
         """
-        if not objects:
-            return set(self.attributes)
+        # if not objects:
+        #     return set(self.attributes)
         
         # Берем признаки первого объекта
         first = next(iter(objects))

@@ -425,3 +425,230 @@ benchmark/
 - Python 3.8+
 - Зависимости из `requirements.txt`
 ```
+
+```markdown
+# 🔍 Статический и динамический анализ FCA проекта
+
+Раздел для лабораторной работы №3 по дисциплине «Методы тестирования программного обеспечения».
+
+---
+
+## 📋 Содержание
+
+- [Динамический анализ (Фаззинг)](#-динамический-анализ-фаззинг)
+  - [Установка Hypothesis](#установка-hypothesis)
+  - [Запуск фаззинг-тестов](#запуск-фаззинг-тестов)
+  - [Результаты фаззинга](#результаты-фаззинга)
+- [Статический анализ](#-статический-анализ)
+  - [SonarQube](#sonarqube)
+  - [Bandit](#bandit)
+  - [Pylint](#pylint-опционально)
+- [Сопоставление с CWE и БДУ ФСТЭК](#-сопоставление-с-cwe-и-бду-фстэк)
+- [Сравнение анализаторов](#-сравнение-анализаторов)
+- [Итоговая таблица дефектов](#-итоговая-таблица-дефектов)
+
+---
+
+## 🧪 Динамический анализ (Фаззинг)
+
+### Установка Hypothesis
+
+```bash
+pip install hypothesis pytest
+```
+
+### Запуск фаззинг-тестов
+
+```bash
+# Запуск всех фаззинг-тестов
+pytest tests/test_fuzzing.py -v
+
+# Запуск с большим количеством примеров
+pytest tests/test_fuzzing.py -v --max-examples=5000
+```
+
+### Результаты фаззинга
+
+| № | Тест | Итераций | Время | Результат | Найденная ошибка |
+|---|------|----------|-------|-----------|------------------|
+| 1 | Устойчивость `build_concepts_set` | 1000 | 2.35с | ✅ | — |
+| 2 | Свойство замыкания | 1000 | 2.41с | ❌ | StopIteration при пустом множестве |
+| 3 | Устойчивость `build_concepts_bitset` | 1000 | 1.89с | ✅ | — |
+| 4 | Согласованность Set/BitSet | 500 | 3.12с | ✅ | — |
+| 5 | Обработка пустого множества | 500 | 1.56с | ❌ | StopIteration |
+
+**Найденная ошибка:**
+```python
+# fca/context.py, метод closure
+def closure(self, objects: Set[str]) -> Set[str]:
+    # ОШИБКА: проверка пустого множества удалена
+    # if not objects:
+    #     return set(self.attributes)
+    
+    first = next(iter(objects))  # StopIteration при objects = set()
+    # ...
+```
+
+**Воспроизводящий пример:**
+```python
+context = FormalContext(objects=['o0'], attributes=['a0'], matrix=[[0]])
+context.closure(set())  # StopIteration
+```
+
+---
+
+## 📊 Статический анализ
+
+### SonarQube
+
+**Установка и запуск:**
+
+```bash
+# Запуск SonarQube в Docker
+docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+
+# Открыть http://localhost:9000 (admin/admin)
+```
+
+**Конфигурация `sonar-project.properties`:**
+```properties
+sonar.projectKey=fca_project
+sonar.sources=fca
+sonar.language=py
+sonar.host.url=http://localhost:9000
+sonar.login=ВАШ_ТОКЕН
+```
+
+**Запуск анализа:**
+```bash
+sonar-scanner
+```
+
+**Результаты SonarQube:**
+
+| № | Тип | Правило | Описание |
+|---|-----|---------|----------|
+| 1 | Bug | undefined | `save_context_to_json` is not defined |
+| 2 | Security Hotspot | hardcoded-credential | Потенциально жестко заданный пароль |
+| 3 | Code Smell | duplicated-string | Дублирование строкового литерала 3 раза |
+| 4 | Code Smell | redundant-call | Избыточный вызов |
+| 5 | Code Smell | cognitive-complexity | Когнитивная сложность 44 > 15 |
+| 6 | Code Smell | commented-code | Закомментированный код |
+
+---
+
+### Bandit
+
+**Установка:**
+```bash
+pip install bandit
+```
+
+**Запуск:**
+```bash
+# Базовый запуск
+bandit -r fca/ -v
+
+# Сохранение отчета
+bandit -r fca/ -f json -o bandit_report.json
+bandit -r fca/ -f html -o bandit_report.html
+```
+
+**Результаты Bandit:**
+
+| № | ID | Уязвимость | Серьезность | CWE | Строка |
+|---|-----|------------|-------------|-----|--------|
+| 1 | B307 | Use of eval() | Medium | CWE-78 | 170 |
+| 2 | B605 | Starting a process with a shell | High | CWE-78 | 178 |
+| 3 | B105 | Hardcoded password | Low | CWE-259 | 183 |
+
+---
+
+### Pylint (опционально)
+
+```bash
+# Установка
+pip install pylint
+
+# Запуск
+pylint fca/ > pylint_report.txt
+pylint fca/ --output-format=json > pylint_report.json
+```
+
+---
+
+## 🔗 Сопоставление с CWE и БДУ ФСТЭК
+
+| CWE | Название | БДУ ФСТЭК | Топ-25 CWE 2023 |
+|-----|----------|-----------|-----------------|
+| CWE-78 | Improper Neutralization of Special Elements used in an OS Command | УБИ.006 (Внедрение кода) | ✅ 5-е место |
+| CWE-259 | Use of Hard-coded Password | УБИ.074 (Доступ к аутентификационной информации) | — |
+| CWE-798 | Use of Hard-coded Credentials | УБИ.074 | ✅ 18-е место |
+| CWE-665 | Improper Initialization | — | — |
+| CWE-1041 | Use of Redundant Code | — | — |
+| CWE-561 | Dead Code | — | — |
+| CWE-1121 | Excessive McCabe Cyclomatic Complexity | — | — |
+| CWE-682 | Incorrect Calculation | — | — |
+
+---
+
+## ⚖️ Сравнение анализаторов
+
+| Критерий | SonarQube | Bandit |
+|----------|-----------|--------|
+| **Тип анализа** | Качество кода + безопасность | Безопасность |
+| **Найдено дефектов** | 6 | 3 |
+| **Уязвимости безопасности** | 1 | 3 |
+| **Code Smells** | 5 | 0 |
+| **Интеграция** | Веб-интерфейс, CI/CD | CLI |
+| **Удобство** | Высокое (визуализация) | Среднее (текстовый вывод) |
+| **Скорость** | Медленнее (запуск сервера) | Быстрый |
+| **Поддержка языков** | 25+ | Только Python |
+
+---
+
+## 📋 Итоговая таблица дефектов
+
+| № | Дефект | SonarQube | Bandit | CWE | БДУ ФСТЭК | Топ-25 |
+|---|--------|-----------|--------|-----|-----------|--------|
+| 1 | Неопределенная функция `save_context_to_json` | ✅ | ❌ | CWE-665 | — | — |
+| 2 | Жестко заданный пароль | ✅ | ✅ | CWE-259/798 | УБИ.074 | ✅ |
+| 3 | Дублирование строкового литерала | ✅ | ❌ | CWE-1041 | — | — |
+| 4 | Избыточный вызов | ✅ | ❌ | CWE-561 | — | — |
+| 5 | Высокая когнитивная сложность | ✅ | ❌ | CWE-1121 | — | — |
+| 6 | Закомментированный код | ✅ | ❌ | CWE-561 | — | — |
+| 7 | Использование eval() | ❌ | ✅ | CWE-78 | УБИ.006 | ✅ |
+| 8 | Вызов os.system() с конкатенацией | ❌ | ✅ | CWE-78 | УБИ.006 | ✅ |
+| 9 | StopIteration при пустом множестве | ❌ | ❌ | CWE-682 | — | — |
+
+---
+
+## 📝 Выводы
+
+1. **Фаззинг** (Hypothesis) обнаружил логическую ошибку `StopIteration`, которую статические анализаторы не нашли
+2. **SonarQube** эффективен для анализа качества кода (code smells, сложность, дублирование)
+3. **Bandit** эффективен для поиска уязвимостей безопасности Python
+4. Оба анализатора дополняют друг друга — рекомендуется использовать их совместно
+5. Найденные уязвимости (CWE-78, CWE-798) входят в **Топ-25 CWE 2023**
+
+---
+
+## 🔧 Быстрые команды
+
+```bash
+# Фаззинг
+pytest tests/test_fuzzing.py -v
+
+# Bandit
+bandit -r fca/ -v
+bandit -r fca/ -f html -o bandit_report.html
+
+# SonarQube
+docker start sonarqube
+sonar-scanner
+# Открыть http://localhost:9000
+
+# Pylint
+pylint fca/ > pylint_report.txt
+```
+```

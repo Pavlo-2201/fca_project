@@ -1,0 +1,28 @@
+From HEAD Mon Sep 17 00:00:00 2001
+From: Hypothesis 6.151.9 <no-reply@hypothesis.works>
+Date: Tue, 24 Mar 2026 10:52:43
+Subject: [PATCH] Hypothesis: add explicit examples
+
+---
+--- ./tests\test_fuzzing.py
++++ ./tests\test_fuzzing.py
+@@ -87,13 +87,18 @@
+ 
+ @given(context=context_strategy())
+ @settings(max_examples=1000, suppress_health_check=[HealthCheck.too_slow])
++@example(
++    context=FormalContext(objects=['o0'],
++     attributes=['a0'],
++     matrix=[[0]]),  # or any other generated value
++).via('discovered failure')
+ def test_fuzz_build_concepts_set_closure_property(context):
+     """
+     Фаззинг: проверка свойства замыкания для всех понятий.
+     Для каждого понятия (A, B): closure(A) == B.
+     """
+     concepts = build_concepts_set(context)
+-    
++
+     for extent, intent in concepts:
+         # Вычисляем замыкание объема
+         computed_intent = context.closure(extent)
